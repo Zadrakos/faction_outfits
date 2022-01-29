@@ -70,74 +70,12 @@ ITEM.functions.EquipUn = {
 	OnCanRun = function(item)
 		local client = item.player
 
-		return !IsValid(item.entity) and IsValid(client) and item:GetData("equip") == true and
-			hook.Run("CanPlayerUnequipItem", client, item) != false and client:GetCharacter():GetData("isMaskOn") == false
-	end
-}
-
---[[ITEM.functions.Equip = {
-    OnCanRun = function(item)
-        local client = item.player
-
-        if item:GetData( "isEquipped" ) then
-            return false
-        else
-            return true
-        end
-    end,
-	OnRun = function(item)
-		local client = item.player
-		local curModel = client:GetModel()
-        local curGroups = client:GetData("groups")
-
-        client:EmitSound("npc/combine_soldier/gear"..math.random(1, 6)..".wav")
-
-        item:SetData( "isEquipped", true )
-        client:GetCharacter():SetData( "hasUniformOn", true )
-        client:GetCharacter():SetData( "oldOutfitGroups", curGroups )
-        timer.Simple(0.1, function()
-            client:SetModel(item.defReplacers[ curModel ])
-            client:GetCharacter():SetData("groups", {item.setBodygroups})
-            
-            for index, data in ipairs( item.setBodygroups ) do
-                client:SetBodygroup( index, data )
-            end
-        end)
-
-        return false
-	end
-}
-
-ITEM.functions.Unequip = {
-    OnCanRun = function(item)
-        local client = item.player
-
-        if item:GetData( "isEquipped" ) then
-            return true
-        else
-            return false
-        end
-    end,
-    OnRun = function(item)
-		local client = item.player
-        local character = client:GetCharacter()
-		local curModel = client:GetModel()
-
-        client:EmitSound("npc/metropolice/gear"..math.random(1, 6)..".wav")
-
-        item:SetData( "isEquipped", false )
-        character:SetData( "hasUniformOn", false )
-        client:SetModel(item.newReplacers[ curModel ])
-        timer.Simple(0.1, function()
-            character:SetData("groups", character:GetData("oldOutfitGroups"))
-
-            for index, data in ipairs( character:GetData("oldOutfitGroups") ) do
-                client:SetBodygroup( index, data )
+        if !IsValid(item.entity) and IsValid(client) and item:GetData("equip") == true and hook.Run("CanPlayerUnequipItem", client, item) != false and client:GetCharacter():GetData("isMaskOn") == false then
+            for k, v in ipairs(client:GetBodyGroups()) do
+                client:SetBodygroup(v, 0)
             end
 
-            character:SetData("oldOutfitGroups", {})
-        end)
-
-        return false
+            return true
+        else return false end
 	end
-}]]
+}
